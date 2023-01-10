@@ -521,7 +521,7 @@ if __name__ == '__main__':
     start_handler = CommandHandler('start', start)
 
     application.add_handler(start_handler)
-    application.add_handler(MessageHandler(callback=handle_generic_excel_file_callback,filters=filters.Document.FileExtension("xlsx")))
+    application.add_handler(MessageHandler(callback=handle_generic_excel_file_callback,filters=filters.Document.FileExtension("csv")))
     application.add_handler(MessageHandler(callback=message_handler,filters=filters.TEXT))
     application.add_handler(CallbackQueryHandler(callback=criar_curso,pattern='criar_curso'))
     application.add_handler(CallbackQueryHandler(callback=nao_deseja_criar_curso,pattern='nao_deseja_criar_curso'))
