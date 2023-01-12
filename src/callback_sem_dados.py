@@ -13,7 +13,7 @@ import pandas as pd
 import time
 
 from geral import call_database_and_execute, hash_string
-from bot_cursos import Callback
+from callback import Callback
 
 
 

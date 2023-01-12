@@ -10,6 +10,7 @@ import telegram
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
+from callback_sem_dados import CallbackSemDados
 from geral import *
 from hashlib import sha256
 from estados_do_usuario import make_sure_estado_is_init
@@ -20,9 +21,7 @@ BOT_TOKEN = "5624757690:AAGmsRPmRfEhBnEqKhIfW9pcBjNXsMeDeVY"
 
 
 from estados_do_usuario import lida_com_todos_os_estados_do_usuario,set_estado_do_usuario
-from callback import Callback
-from callback_com_dados import CallbackComDados
-from callback_sem_dados import CallbackSemDados
+from callback import Callback,import_all_callbacks
 from nosso_inline_keyboard_button import NossoInlineKeyboardButton
 
 
@@ -108,6 +107,11 @@ async def ver_cursos(update: Update,context: ContextTypes.DEFAULT_TYPE):
 async def handler_generic_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     make_sure_flags_are_init(update.effective_chat.id)
 
+    lida_com_todos_os_estados_do_usuario(update,context)
+
+
+
+
     if flags_per_user[update.effective_chat.id]["entrando_em_curso"]:
         if flags_per_user[update.effective_chat.id]["mandando_codigo"]:
             curso_existe = call_database_and_execute("SELECT * FROM cursos WHERE id = ?",[update.effective_message.text])
@@ -169,12 +173,12 @@ async def nao_possui_codigo(update: Update,context: ContextTypes.DEFAULT_TYPE):
     await send_message_or_edit_last(update,context,text="Esse código é o id do curso em que você deseja entrar.\n\nPara obte-lo, solicite-o ao dono do curso.")
  
 if __name__ == '__main__':
-
+    import_all_callbacks(globals())
     application = ApplicationBuilder().token(BOT_TOKEN).build()
     
     start_handler = CommandHandler('start', start)
 
-    for subclasse in Callback.__subclasses__():
+    for subclasse in get_all_subclasses(CallbackSemDados):
         application.add_handler(CallbackQueryHandler(callback=subclasse.lida_callback,pattern=subclasse.__name__))
     
 

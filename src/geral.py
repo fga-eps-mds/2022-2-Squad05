@@ -10,13 +10,17 @@ import telegram
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-from geral import call_database_and_execute,hash_string
 from hashlib import sha256
 from typing import List
 import sqlite3 as sql
 
-from nosso_inline_keyboard_button import NossoInlineKeyboardButton
 
+def get_all_subclasses(cls):
+    subclasses = cls.__subclasses__()
+    for i in cls.__subclasses__():
+        subclasses += get_all_subclasses(i)
+    return subclasses
+    
 def hash_string(senha: str):
     return sha256(senha.encode('utf-8')).hexdigest()[:15]
 
@@ -77,7 +81,7 @@ def reset_flags(user_id):
 async def send_message_on_new_block(update: Update,context: ContextTypes.DEFAULT_TYPE,text:str,buttons = [],parse_mode = ''):
     for column in range(len(buttons)):
         for row in range(len(buttons[column])):
-            if isinstance(buttons[column][row],NossoInlineKeyboardButton):
+            if buttons[column][row].__class__.__name__ == "NossoInlineKeyboardButton":
                 buttons[column][row] = buttons[column][row].get_button()
     
     reset_last_message(update.effective_chat.id)
@@ -89,7 +93,7 @@ async def send_message_or_edit_last(update: Update,context: ContextTypes.DEFAULT
 
     for column in range(len(buttons)):
         for row in range(len(buttons[column])):
-            if isinstance(buttons[column][row],NossoInlineKeyboardButton):
+            if buttons[column][row].__class__.__name__ == "NossoInlineKeyboardButton":
                 buttons[column][row] = buttons[column][row].get_button()
                 
 

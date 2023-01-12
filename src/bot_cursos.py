@@ -11,17 +11,16 @@ from typing import List
 from copy import deepcopy
 import pandas as pd
 import time
+from callback_com_dados import CallbackComDados
+from callback_sem_dados import CallbackSemDados
 
 from geral import *
 
 
 from estados_do_usuario import lida_com_todos_os_estados_do_usuario,set_estado_do_usuario
-from callback import Callback
-from callback_com_dados import CallbackComDados
-from callback_sem_dados import CallbackSemDados
+from callback import Callback,import_all_callbacks
 from nosso_inline_keyboard_button import NossoInlineKeyboardButton
 from estados_do_usuario import make_sure_estado_is_init
-
 
 
 # definindo como o log vai ser salvo
@@ -433,7 +432,7 @@ async def handle_generic_callback(update: Update, context: ContextTypes.DEFAULT_
 
 
         descricao_ordem, dados = query.split()
-        for subclass in CallbackComDados.__subclasses__():
+        for subclass in get_all_subclasses(CallbackComDados):
             if descricao_ordem == subclass.__name__:
                 await subclass.lida_callback(update,context,dados)
 
@@ -545,6 +544,7 @@ async def cadastrar_aulas_individualmente(id_curso, update: Update, context: Con
 
 
 if __name__ == '__main__':
+    import_all_callbacks(globals())
 
     application = ApplicationBuilder().token('5507439323:AAGiiQ0_vnqIilIRBPRBtGnS54eje4D5xVE').build()
     
@@ -555,7 +555,7 @@ if __name__ == '__main__':
     application.add_handler(MessageHandler(callback=message_handler,filters=filters.TEXT))
     
 
-    for subclasse in Callback.__subclasses__():
+    for subclasse in get_all_subclasses(CallbackSemDados):
         application.add_handler(CallbackQueryHandler(callback=subclasse.lida_callback,pattern=subclasse.__name__))
     
     application.add_handler(CallbackQueryHandler(callback=criar_curso,pattern='criar_curso'))
