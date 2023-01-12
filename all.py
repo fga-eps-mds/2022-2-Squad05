@@ -2,13 +2,13 @@ import multiprocessing
 import os
 import subprocess
 
-from geral import call_database_and_execute
+from src.geral import call_database_and_execute
 
 
 cursos_process = multiprocessing.Process(
     target=subprocess.run,
     kwargs={
-        'args': f'python3 bot_cursos.py',
+        'args': f'python3 src/bot_cursos.py',
         'shell': True
 
     })
@@ -17,7 +17,7 @@ cursos_process = multiprocessing.Process(
 alunos_process= multiprocessing.Process(
     target=subprocess.run,
     kwargs={
-        'args': f'python3 bot_alunos.py',
+        'args': f'python3 src/bot_alunos.py',
         'shell': True
     })
 

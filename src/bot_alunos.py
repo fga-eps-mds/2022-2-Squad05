@@ -10,10 +10,20 @@ import telegram
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-from geral import call_database_and_execute,hash_string
+from geral import *
 from hashlib import sha256
 
+
+
 BOT_TOKEN = "5624757690:AAGmsRPmRfEhBnEqKhIfW9pcBjNXsMeDeVY"
+
+
+from estados_do_usuario import lida_com_todos_os_estados_do_usuario,set_estado_do_usuario
+from callback import Callback
+from callback_com_dados import CallbackComDados
+from callback_sem_dados import CallbackSemDados
+from nosso_inline_keyboard_button import NossoInlineKeyboardButton
+
 
 
 
@@ -24,52 +34,6 @@ logging.basicConfig(
 )
 
 
-# dicionario para guardar o id da ultima mensagem mandada p/ cada usuário
-# serve para evitar mandarmos muitas mensagens
-last_messages = {}
-
-# flags por usuário para controlar em qual estágio da conversa ele está
-flags_per_user = {}
-
-
-
-
-flags = {
-    "entrando_em_curso":False,
-        "mandando_codigo":False,
-        "mandando_senha":False
-}
-
-def make_sure_flags_are_init(user_id):
-    """função auxiliar para garantir que não vamos acessar um usuário não existente"""
-    if user_id not in flags_per_user:
-        flags_per_user[user_id] = deepcopy(flags)
-
-
-
-
-# função auxiliar para evitar mudar uma mensagem muito atrás
-def reset_last_message(user_id):
-    if user_id in last_messages:
-        del last_messages[user_id]
-
-def reset_flags(user_id):
-    """função auxiliar para resetar as flags"""
-    flags_per_user[user_id] = deepcopy(flags)
-
-
-async def send_message_on_new_block(update: Update,context: ContextTypes.DEFAULT_TYPE,text:str,buttons = [],parse_mode = ''):
-    reset_last_message(update.effective_chat.id)
-    await context.bot.send_message(chat_id=update.effective_chat.id,text=text,reply_markup=telegram.InlineKeyboardMarkup(inline_keyboard=buttons),parse_mode=parse_mode)
-    
-
-async def send_message_or_edit_last(update: Update,context: ContextTypes.DEFAULT_TYPE,text:str,buttons = [],parse_mode = ''):
-    """função auxiliar para enviar uma mensagem mais facilmente ou editar a última se possível"""
-    if update.effective_chat.id in last_messages:
-        await context.bot.edit_message_text(chat_id=update.effective_chat.id,message_id=last_messages[update.effective_chat.id],text=text,reply_markup=telegram.InlineKeyboardMarkup(inline_keyboard=buttons))
-    else:
-        message = await context.bot.send_message(chat_id=update.effective_chat.id,text=text,reply_markup=telegram.InlineKeyboardMarkup(inline_keyboard=buttons),parse_mode=parse_mode)
-        last_messages[update.effective_chat.id] = message.id
 
 
 async def start(update: Update,context: ContextTypes.DEFAULT_TYPE):
@@ -202,9 +166,14 @@ async def nao_possui_codigo(update: Update,context: ContextTypes.DEFAULT_TYPE):
     await send_message_or_edit_last(update,context,text="Esse código é o id do curso em que você deseja entrar.\n\nPara obte-lo, solicite-o ao dono do curso.")
  
 if __name__ == '__main__':
+
     application = ApplicationBuilder().token(BOT_TOKEN).build()
     
     start_handler = CommandHandler('start', start)
+
+    for subclasse in Callback.__subclasses__():
+        application.add_handler(CallbackQueryHandler(callback=subclasse.lida_callback,pattern=subclasse.__name__))
+    
 
     application.add_handler(start_handler)
     application.add_handler(CallbackQueryHandler(pegar_codigo_curso,pattern="pegar_codigo_curso"))
