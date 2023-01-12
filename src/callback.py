@@ -13,7 +13,7 @@ import pandas as pd
 import time
 
 from geral import call_database_and_execute, hash_string
-
+from estados_do_usuario import estados_dos_usuarios,EstadoDoUsuario
 
 
 class Callback:
@@ -24,3 +24,4 @@ class Callback:
 
     async def lida_callback(update: Update,context: ContextTypes.DEFAULT_TYPE):
         pass
+            

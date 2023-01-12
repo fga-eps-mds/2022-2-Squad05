@@ -12,6 +12,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 from geral import *
 from hashlib import sha256
+from estados_do_usuario import make_sure_estado_is_init
 
 
 
@@ -38,6 +39,8 @@ logging.basicConfig(
 
 async def start(update: Update,context: ContextTypes.DEFAULT_TYPE):
     make_sure_flags_are_init(update.effective_chat.id)
+    make_sure_estado_is_init(update)
+    
     dados = call_database_and_execute("SELECT * FROM users WHERE user_id = ?",[update.effective_chat.id])
 
     if len(dados) == 0:
