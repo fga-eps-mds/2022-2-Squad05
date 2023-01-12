@@ -20,7 +20,7 @@ def get_all_subclasses(cls):
     for i in cls.__subclasses__():
         subclasses += get_all_subclasses(i)
     return subclasses
-    
+
 def hash_string(senha: str):
     return sha256(senha.encode('utf-8')).hexdigest()[:15]
 
@@ -50,7 +50,13 @@ flags_per_user = {}
 flags = {
     "entrando_em_curso":False,
         "mandando_codigo":False,
-        "mandando_senha":False
+        "mandando_senha":False,
+
+    "mandando_arquivo":False,
+
+    "cadastrando_aula":False,
+        "mandando_titulo_aula":False,
+        "mandando_descricao_aula":False
 }
 
 
