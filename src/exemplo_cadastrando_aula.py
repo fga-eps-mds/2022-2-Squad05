@@ -16,8 +16,10 @@ from geral import call_database_and_execute, hash_string
 from estados_do_usuario import EstadoDoUsuario
 
 
+#TODO Colocar nos bots
+
 class CadastrandoAula(EstadoDoUsuario):
-    def lida_com_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    def lida_com_mensagem(self,update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         print('faz as coisas')
 
@@ -25,14 +27,14 @@ class CadastrandoAula(EstadoDoUsuario):
 
 
 class MandandoTituloAula(CadastrandoAula):
-    def lida_com_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    def lida_com_mensagem(self,update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         print('lida com estado...')
 
         return super().lida_com_mensagem(context)
 
 class MandandoDescricaoAula(CadastrandoAula):
-    def lida_com_mensagem(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    def lida_com_mensagem(self,update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         pass
         return super().lida_com_mensagem(context)

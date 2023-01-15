@@ -17,10 +17,9 @@ from callback import Callback
 
 
 class CallbackComDados(Callback):
-
     async def lida_callback(update: Update, context: ContextTypes.DEFAULT_TYPE,dados):
         pass
-        return super().lida_callback(update,context)
+        return await Callback.lida_callback(update,context)
 
     def __init__(self,dados):
         self._dados = dados

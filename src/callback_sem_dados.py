@@ -20,6 +20,5 @@ from callback import Callback
 class CallbackSemDados(Callback):
 
     
-
     def get_callback_str(self):
         return f'{self.__class__.__name__}'

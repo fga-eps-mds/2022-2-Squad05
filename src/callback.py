@@ -13,17 +13,15 @@ from typing import List
 from copy import deepcopy
 import pandas as pd
 import time
-from estados_do_usuario import estados_dos_usuarios,EstadoDoUsuario
+from estados_do_usuario import EstadoDoUsuario
 import importlib.util as util
 
 class Callback:
 
 
-    
-
     def get_callback_str(self):
-        ""
-
+        return ''
+    
     async def lida_callback(update: Update,context: ContextTypes.DEFAULT_TYPE):
         pass    
             

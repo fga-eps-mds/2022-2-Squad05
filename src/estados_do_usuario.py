@@ -15,23 +15,29 @@ import time
 from geral import call_database_and_execute, hash_string
 
 
-estados_dos_usuarios = {
-
-}
 
 class EstadoDoUsuario:
-
-        def lida_com_mensagem(update: Update,context: ContextTypes.DEFAULT_TYPE):
+        __estados_dos_usuarios = {}
+        def get_estados_dos_usuarios():
+            return EstadoDoUsuario.__estados_dos_usuarios
+       
+        def lida_com_mensagem(self,update: Update,context: ContextTypes.DEFAULT_TYPE):
             pass
 
 def make_sure_estado_is_init(update: Update):
-    if update.effective_chat.id not in estados_dos_usuarios:
-            estados_dos_usuarios[update.effective_chat.id] = EstadoDoUsuario()
+    if update.effective_chat.id not in EstadoDoUsuario.get_estados_dos_usuarios():
+            EstadoDoUsuario.get_estados_dos_usuarios()[update.effective_chat.id] = EstadoDoUsuario()
 
+
+def get_estados_dos_usuarios():
+    return EstadoDoUsuario.get_estados_dos_usuarios()
+
+def clear_estados_dos_usuarios():
+    EstadoDoUsuario.get_estados_dos_usuarios().clear()
 
 def lida_com_todos_os_estados_do_usuario(update: Update,context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.id in estados_dos_usuarios:
-        estados_dos_usuarios[update.effective_chat.id].lida_com_mensagem(update,context)
+    if update.effective_chat.id in EstadoDoUsuario.get_estados_dos_usuarios():
+        EstadoDoUsuario.get_estados_dos_usuarios()[update.effective_chat.id].lida_com_mensagem(update,context)
 
 def set_estado_do_usuario(usuario_id,estado: EstadoDoUsuario):
-    estados_dos_usuarios[usuario_id] = estado
+    EstadoDoUsuario.get_estados_dos_usuarios()[usuario_id] = estado

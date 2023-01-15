@@ -21,6 +21,8 @@ from estados_do_usuario import lida_com_todos_os_estados_do_usuario,set_estado_d
 from callback import Callback,import_all_callbacks
 from nosso_inline_keyboard_button import NossoInlineKeyboardButton
 from estados_do_usuario import make_sure_estado_is_init
+from nao_deseja_criar_curso import NaoDesejaCriarCurso
+from receber_id_curso import ReceberIdCurso
 
 
 # definindo como o log vai ser salvo
@@ -49,7 +51,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             telegram.InlineKeyboardButton(text="Sim",callback_data='criar_curso'),
         ],
         [
-            telegram.InlineKeyboardButton(text="Não",callback_data='nao_deseja_criar_curso')
+            #telegram.InlineKeyboardButton(text="Não",callback_data='nao_deseja_criar_curso')
+            NossoInlineKeyboardButton('Não',callback=NaoDesejaCriarCurso())
         ]
         ])
     else:
@@ -210,7 +213,8 @@ async def menu_curso(id_curso: str,update: Update,context: ContextTypes.DEFAULT_
     print(dados_curso)
     buttons = [
             [
-                InlineKeyboardButton(text="ver id do curso",callback_data=f"receber_id_curso {id_curso}")
+                #InlineKeyboardButton(text="ver id do curso",callback_data=f"receber_id_curso {id_curso}")
+                NossoInlineKeyboardButton(text="ver id do curso",callback=ReceberIdCurso(id_curso))
             ],
             [
                 InlineKeyboardButton(text="editar nome",callback_data=f"editar_nome_curso {id_curso}")
@@ -450,9 +454,7 @@ async def handle_generic_callback(update: Update, context: ContextTypes.DEFAULT_
             print("calling curso!")
             await menu_curso(query.split()[1],update,context)
             return
-        if descricao_ordem == "receber_id_curso":
-            await context.bot.send_message(chat_id=update.effective_chat.id,text=query.split()[1])
-            return
+        
 
         if descricao_ordem == "editar_nome_curso":
             await send_message_or_edit_last(update,context,text="Ok! Qual nome você deseja associar a esse curso?",

@@ -23,4 +23,5 @@ class VerCursoEspecifico(CallbackComDados):
     async def lida_callback(update: Update, context: ContextTypes.DEFAULT_TYPE, dados):
         print('calling!!')
 
-        return super().lida_callback(context, dados)
+        
+        return CallbackComDados.lida_callback(update,context, dados)
