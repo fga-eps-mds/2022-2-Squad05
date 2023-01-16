@@ -11,9 +11,18 @@ from typing import List
 from copy import deepcopy
 import pandas as pd
 import time
+from callback_com_dados import CallbackComDados
+from callback_sem_dados import CallbackSemDados
 
-from geral import call_database_and_execute, hash_string
+from geral import *
 
+
+from estados_do_usuario import lida_com_todos_os_estados_do_usuario,set_estado_do_usuario
+from callback import Callback,import_all_callbacks
+from nosso_inline_keyboard_button import NossoInlineKeyboardButton
+from estados_do_usuario import make_sure_estado_is_init
+from nao_deseja_criar_curso import NaoDesejaCriarCurso
+from receber_id_curso import ReceberIdCurso
 
 
 # definindo como o log vai ser salvo
@@ -22,70 +31,6 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-# dicionario para guardar o id da ultima mensagem mandada p/ cada usuário
-# serve para evitar mandarmos muitas mensagens
-last_messages = {}
-
-# flags por usuário para controlar em qual estágio da conversa ele está
-flags_per_user = {}
-
-# dicionario para guardar os dados temporários quando estiver criando um curso novo
-temp_dados_curso = {}
-
-
-
-flags = {
-    "criando_curso":False,
-
-    "editando_curso":False,
-        "mandando_nome_curso":False,
-        "mandando_descricao_curso":False,
-        "mandando_senha_curso":False,
-        #etc
-    
-    "editando_aulas":False,
-        "editando_descricao_aula":False,
-        "mandando_arquivo":False,
-
-    "cadastrando_aula":False,
-        "mandando_titulo_aula":False,
-        "mandando_descricao_aula":False
-}
-
-def reset_temp_curso(user_id):
-    temp_dados_curso[user_id] = {"nome":"","descricao":"","senha":"","id":""}
-
-def make_sure_flags_are_init(user_id):
-    """função auxiliar para garantir que não vamos acessar um usuário não existente"""
-    if user_id not in flags_per_user:
-        flags_per_user[user_id] = deepcopy(flags)
-
-
-
-def reset_flags(user_id):
-    """função auxiliar para resetar as flags"""
-    flags_per_user[user_id] = deepcopy(flags)
-    reset_temp_curso(user_id)
-
-    
-# função auxiliar para evitar mudar uma mensagem muito atrás
-def reset_last_message(user_id):
-    if user_id in last_messages:
-        del last_messages[user_id]
-
-async def send_message_on_new_block(update: Update,context: ContextTypes.DEFAULT_TYPE,text:str,buttons = [],parse_mode = ''):
-    reset_last_message(update.effective_chat.id)
-    await context.bot.send_message(chat_id=update.effective_chat.id,text=text,reply_markup=telegram.InlineKeyboardMarkup(inline_keyboard=buttons),parse_mode=parse_mode)
-    
-
-async def send_message_or_edit_last(update: Update,context: ContextTypes.DEFAULT_TYPE,text:str,buttons = [],parse_mode = ''):
-    """função auxiliar para enviar uma mensagem mais facilmente ou editar a última se possível"""
-    if update.effective_chat.id in last_messages:
-        await context.bot.edit_message_text(chat_id=update.effective_chat.id,message_id=last_messages[update.effective_chat.id],text=text,reply_markup=telegram.InlineKeyboardMarkup(inline_keyboard=buttons))
-    else:
-        message = await context.bot.send_message(chat_id=update.effective_chat.id,text=text,reply_markup=telegram.InlineKeyboardMarkup(inline_keyboard=buttons),parse_mode=parse_mode)
-        last_messages[update.effective_chat.id] = message.id
-
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """função chamada quando uma conversa nova é iniciada ou ao mandar um /start"""
@@ -93,6 +38,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = call_database_and_execute("SELECT * FROM users WHERE user_id = ?",(update.effective_user.id,))
     reset_flags(update.effective_chat.id)
     reset_last_message(update.effective_chat.id)
+    make_sure_estado_is_init(update)
     message = """Olá! Sou o Bote, o salva-vidas dos seus cursos!
     
 """
@@ -105,7 +51,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             telegram.InlineKeyboardButton(text="Sim",callback_data='criar_curso'),
         ],
         [
-            telegram.InlineKeyboardButton(text="Não",callback_data='nao_deseja_criar_curso')
+            #telegram.InlineKeyboardButton(text="Não",callback_data='nao_deseja_criar_curso')
+            NossoInlineKeyboardButton('Não',callback=NaoDesejaCriarCurso())
         ]
         ])
     else:
@@ -136,13 +83,16 @@ async def mostrar_menu_principal(message: str,update: Update,context: ContextTyp
     await send_message_or_edit_last(update,context,text=message + "Como posso ajudar hoje?",buttons=buttons)
 
 
-
 async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     função para lidar com mensagens enviadas pelo usuário (respostas ao bot, por exemplo)
     """
     print('calling message handler!')
     make_sure_flags_are_init(update.effective_chat.id)
+
+    lida_com_todos_os_estados_do_usuario(update,context)
+
+
 
     if flags_per_user[update.effective_chat.id]['cadastrando_aula']:
         id_curso = temp_dados_curso[update.effective_chat.id]['id_curso']
@@ -156,6 +106,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     ]
                 ]
             )
+            
             flags_per_user[update.effective_chat.id]["mandando_titulo_aula"] = False
             flags_per_user[update.effective_chat.id]["mandando_descricao_aula"] = True
             return 
@@ -262,7 +213,8 @@ async def menu_curso(id_curso: str,update: Update,context: ContextTypes.DEFAULT_
     print(dados_curso)
     buttons = [
             [
-                InlineKeyboardButton(text="ver id do curso",callback_data=f"receber_id_curso {id_curso}")
+                #InlineKeyboardButton(text="ver id do curso",callback_data=f"receber_id_curso {id_curso}")
+                NossoInlineKeyboardButton(text="ver id do curso",callback=ReceberIdCurso(id_curso))
             ],
             [
                 InlineKeyboardButton(text="editar nome",callback_data=f"editar_nome_curso {id_curso}")
@@ -359,7 +311,7 @@ async def ver_aulas(id_curso: str,update: Update, context: ContextTypes.DEFAULT_
                 InlineKeyboardButton(text="sim, uma por uma",callback_data=f"enviar_aulas_individualmente {id_curso}")
             ],
             [
-                InlineKeyboardButton(text="voltar",callback_data=f"ver_curso_especifico {id_curso}")
+                InlineKeyboardButton(text='voltar ao menu',callback_data='voltar_ao_menu')
             ]
         ])
     else:
@@ -480,7 +432,14 @@ async def handle_generic_callback(update: Update, context: ContextTypes.DEFAULT_
     query = update.callback_query.data
 
     if len(query.split(' ')) > 1:
+
+
+
         descricao_ordem, dados = query.split()
+        for subclass in get_all_subclasses(CallbackComDados):
+            if descricao_ordem == subclass.__name__:
+                await subclass.lida_callback(update,context,dados)
+
 
         if descricao_ordem == "editar_descricao_aula":
             await send_message_or_edit_last(
@@ -495,9 +454,7 @@ async def handle_generic_callback(update: Update, context: ContextTypes.DEFAULT_
             print("calling curso!")
             await menu_curso(query.split()[1],update,context)
             return
-        if descricao_ordem == "receber_id_curso":
-            await context.bot.send_message(chat_id=update.effective_chat.id,text=query.split()[1])
-            return
+        
 
         if descricao_ordem == "editar_nome_curso":
             await send_message_or_edit_last(update,context,text="Ok! Qual nome você deseja associar a esse curso?",
@@ -517,6 +474,7 @@ async def handle_generic_callback(update: Update, context: ContextTypes.DEFAULT_
             await send_message_or_edit_last(update,context,text="Ok! Me diga qual descrição você gostaria de colocar nesse curso...",
                 buttons=[
                     [
+                        
                         InlineKeyboardButton(text="voltar",callback_data=f"ver_curso_especifico {dados}")
                     ]
                 ]
@@ -588,17 +546,20 @@ async def cadastrar_aulas_individualmente(id_curso, update: Update, context: Con
 
 
 if __name__ == '__main__':
+    import_all_callbacks(globals())
 
     application = ApplicationBuilder().token('5507439323:AAGiiQ0_vnqIilIRBPRBtGnS54eje4D5xVE').build()
     
-    
-    
-
     start_handler = CommandHandler('start', start)
 
     application.add_handler(start_handler)
-    application.add_handler(MessageHandler(callback=handle_generic_excel_file_callback,filters=filters.Document.FileExtension("xlsx")))
+    application.add_handler(MessageHandler(callback=handle_generic_excel_file_callback,filters=filters.Document.FileExtension("csv")))
     application.add_handler(MessageHandler(callback=message_handler,filters=filters.TEXT))
+    
+
+    for subclasse in get_all_subclasses(CallbackSemDados):
+        application.add_handler(CallbackQueryHandler(callback=subclasse.lida_callback,pattern=subclasse.__name__))
+    
     application.add_handler(CallbackQueryHandler(callback=criar_curso,pattern='criar_curso'))
     application.add_handler(CallbackQueryHandler(callback=nao_deseja_criar_curso,pattern='nao_deseja_criar_curso'))
     application.add_handler(CallbackQueryHandler(callback=voltar_ao_menu,pattern='voltar_ao_menu'))
