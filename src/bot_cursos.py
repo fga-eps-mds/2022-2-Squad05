@@ -19,10 +19,12 @@ from geral import *
 
 from estados_do_usuario import lida_com_todos_os_estados_do_usuario,set_estado_do_usuario
 from callback import Callback,import_all_callbacks
+from lida_com_excel import lida_com_arquivo_excel
 from nosso_inline_keyboard_button import NossoInlineKeyboardButton
 from estados_do_usuario import make_sure_estado_is_init
 from nao_deseja_criar_curso import NaoDesejaCriarCurso
 from receber_id_curso import ReceberIdCurso
+from remover_aula import RemoverAula
 
 
 # definindo como o log vai ser salvo
@@ -99,7 +101,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         if flags_per_user[update.effective_chat.id]['mandando_titulo_aula']:
             temp_dados_curso[update.effective_chat.id]['titulo_aula'] = update.effective_message.text
-            await send_message_on_new_block(update,context,text="Ok! Agora me diga uma breve descrição da aula da aula",
+            await send_message_on_new_block(update,context,text="Ok! Agora me diga uma breve descrição da aula",
                 buttons=[
                     [
                         InlineKeyboardButton("voltar ao menu",callback_data=f"ver_aulas {id_curso}")
@@ -113,22 +115,29 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if flags_per_user[update.effective_chat.id]['mandando_descricao_aula']:
         
             temp_dados_curso[update.effective_chat.id]['descricao_aula'] = update.effective_message.text
-            await send_message_on_new_block(update,context,text="Ok! Agora me diga uma breve descrição da aula",
+            await send_message_on_new_block(update,context,text="Ok! Agora me diga os links que você deseja colocar",
                 buttons=[
                     [
                         InlineKeyboardButton("voltar ao menu",callback_data=f"ver_aulas {id_curso}")
                     ]
                 ]
             )
-
-            call_database_and_execute("INSERT INTO aulas_por_curso (aula_id, curso_id, titulo, descricao) VALUES (?,?,?,?)",
+            flags_per_user[update.effective_chat.id]["mandando_descricao_aula"] = False
+            flags_per_user[update.effective_chat.id]["mandando_links_aula"] = True
+            return
+        if flags_per_user[update.effective_chat.id]['mandando_links_aula']:
+            
+            call_database_and_execute("INSERT INTO aulas_por_curso (aula_id, curso_id, titulo, descricao,links) VALUES (?,?,?,?,?)",
                                       [
                                         hash_string(f'{id_curso} {random.random()}'),
                                         id_curso,
                                         temp_dados_curso[update.effective_chat.id]['titulo_aula'],
-                                        temp_dados_curso[update.effective_chat.id]['descricao_aula']
+                                        temp_dados_curso[update.effective_chat.id]['descricao_aula'],
+                                        update.effective_message.text
                                       ])
             reset_flags(update.effective_chat.id)
+
+            await ver_aula_especifica(hash_string(f'{id_curso} {random.random()}'),update,context)
             return
 
     if flags_per_user[update.effective_chat.id]['criando_curso']:
@@ -315,7 +324,7 @@ async def ver_aulas(id_curso: str,update: Update, context: ContextTypes.DEFAULT_
             ]
         ])
     else:
-        buttons = [[InlineKeyboardButton(f'{i + 1} {data["titulo"]}',callback_data=f"ver_aula {data['aula_id']}")] for i,data in enumerate(dados)]
+        buttons = [[InlineKeyboardButton(f'{data["titulo"]}',callback_data=f"ver_aula {data['aula_id']}")] for i,data in enumerate(dados)]
 
         #TODO
         buttons.append([InlineKeyboardButton('adicionar aula',callback_data=f"adicionar_aula {id_curso}")])
@@ -343,6 +352,9 @@ async def ver_aula_especifica(id_aula: str,update: Update, context: ContextTypes
             InlineKeyboardButton(text="adicionar links",callback_data=f"adicionar_links_aula {id_aula}")
         ],
         [
+            NossoInlineKeyboardButton(text="remover aula",callback=RemoverAula(f"{id_curso},{id_aula}"))
+        ],
+        [
             InlineKeyboardButton(text="voltar",callback_data=f"ver_aulas {id_curso}")
         ]
     ])
@@ -354,9 +366,9 @@ async def cadastrar_aulas_excel(id_curso: str,update: Update, context: ContextTy
     """
     await send_message_or_edit_last(update,context,text="""Ok! Para enviar as suas aulas no arquivo excel, por favor crie as colunas
 
-TITULO | DESCRICAO | LINKS
+TITULO | DESCRICAO | LINK
     
-em letra maiúscula exatamente como está escrito acima em um arquivo ".csv". Ai só mandar aqui que eu vou adicionar lá!""",buttons=[
+em letra maiúscula exatamente como está escrito acima em um arquivo ".xlsx" (podem haver várias colunas com o titulo LINK). Ai só mandar aqui que eu vou adicionar lá!""",buttons=[
     [
         InlineKeyboardButton(text="voltar",callback_data=f'ver_aulas {id_curso}')
     ]
@@ -374,51 +386,29 @@ async def handle_generic_excel_file_callback(update: Update, context: ContextTyp
         if flags_per_user[update.effective_chat.id]['mandando_arquivo']:
             await (await context.bot.get_file(update.message.document)).download(f"downloads/{update.message.document.file_unique_id}.xlsx")
 
+
             try:
+                rows, conseguiu = lida_com_arquivo_excel(f"downloads/{update.message.document.file_unique_id}.xlsx")
 
-                file = pd.read_excel(f"downloads/{update.message.document.file_unique_id}.xlsx")
-                expected = ["TITULO","DESCRICAO","LINKS"]
-                inner_rows = []
+                if not conseguiu:
+                    await send_message_on_new_block(update,context,text=f"O seu arquivo não está no formato correto. Por favor, cheque os nomes das colunas e tente novamente")
+                    return
 
-                dictionary = {}
-                for column in file:
-                    titulo = column.title()
-                    if column.title() not in expected:
-                        if file[column][0] not in expected:
-                            await send_message_on_new_block(update,context,text=f"O seu arquivo não está no formato correto. Por favor, cheque os nomes das colunas e tente novamente")
-                        titulo = file[column][0]
-                    dictionary[titulo] = []
-
-                    for row in file[column]:
-                        if row == titulo:
-                            continue
-                        dictionary[titulo].append(row)
-                
-                rows = []
-                for i in range(len(dictionary['TITULO'])):
-                    v = {}
-                    for key in dictionary.keys():
-                        v[key] = dictionary[key][i]
-                    rows.append(v)
-
-                print(rows)
                 for row in rows:
-                    print(row)
                     call_database_and_execute("INSERT INTO aulas_por_curso (aula_id,curso_id,titulo,descricao,links) VALUES (?,?,?,?,?)",[
                         hash_string(f'{update.effective_chat.id}_{time.time()}'),
                         temp_dados_curso[update.effective_chat.id]['id'],
                         row["TITULO"],
                         row["DESCRICAO"],
-                        row['LINKS']
+                        "\n".join(list(filter(lambda x: x != "",[row[i] if i.startswith("LINK") else "" for i in row.keys()])))
                     ])
-                print('finished handling file!')
-                os.remove(f"downloads/{update.message.document.file_unique_id}.xlsx")
+                    
+                
                 await ver_aulas(temp_dados_curso[update.effective_chat.id]['id'],update,context)
             except Exception as e:
                 await send_message_on_new_block(update,context,text=f"Um erro ocorreu enquanto eu lia esse arquivo. Por favor envie esse log para os donos do bot!\n\nError: {e}")
                 os.remove(f"downloads/{update.message.document.file_unique_id}.csv")
                 return
-
     
 
 async def handle_generic_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -553,13 +543,13 @@ if __name__ == '__main__':
     start_handler = CommandHandler('start', start)
 
     application.add_handler(start_handler)
-    application.add_handler(MessageHandler(callback=handle_generic_excel_file_callback,filters=filters.Document.FileExtension("csv")))
+    application.add_handler(MessageHandler(callback=handle_generic_excel_file_callback,filters=filters.Document.FileExtension("xlsx")))
     application.add_handler(MessageHandler(callback=message_handler,filters=filters.TEXT))
     
 
     for subclasse in get_all_subclasses(CallbackSemDados):
         application.add_handler(CallbackQueryHandler(callback=subclasse.lida_callback,pattern=subclasse.__name__))
-    
+
     application.add_handler(CallbackQueryHandler(callback=criar_curso,pattern='criar_curso'))
     application.add_handler(CallbackQueryHandler(callback=nao_deseja_criar_curso,pattern='nao_deseja_criar_curso'))
     application.add_handler(CallbackQueryHandler(callback=voltar_ao_menu,pattern='voltar_ao_menu'))
