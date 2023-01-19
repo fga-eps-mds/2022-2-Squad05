@@ -37,7 +37,10 @@ def clear_estados_dos_usuarios():
 
 def lida_com_todos_os_estados_do_usuario(update: Update,context: ContextTypes.DEFAULT_TYPE):
     if update.effective_chat.id in EstadoDoUsuario.get_estados_dos_usuarios():
+        old_user_state = EstadoDoUsuario.get_estados_dos_usuarios()[update.effective_chat.id]
         EstadoDoUsuario.get_estados_dos_usuarios()[update.effective_chat.id].lida_com_mensagem(update,context)
+        if old_user_state == EstadoDoUsuario.get_estados_dos_usuarios()[update.effective_chat.id]:
+            EstadoDoUsuario.get_estados_dos_usuarios()[update.effective_chat.id] = EstadoDoUsuario()
 
 def set_estado_do_usuario(usuario_id,estado: EstadoDoUsuario):
     EstadoDoUsuario.get_estados_dos_usuarios()[usuario_id] = estado
