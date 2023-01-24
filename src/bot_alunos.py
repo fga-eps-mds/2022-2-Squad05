@@ -28,6 +28,8 @@ from nosso_inline_keyboard_button import NossoInlineKeyboardButton
 
 
 
+
+#teste
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
