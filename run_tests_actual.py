@@ -1,3 +1,3 @@
 import os
 
-os.system("python3 run_tests_subprocess.py > pytest-coverage.txt")
+os.system("python run_tests_subprocess.py > pytest-coverage.txt")
