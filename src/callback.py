@@ -23,8 +23,9 @@ class Callback:
         return ''
     
     async def lida_callback(update: Update,context: ContextTypes.DEFAULT_TYPE):
-        pass    
-            
+        pass
+    
+
 
 
 def import_all_callbacks(global_dict,src_folder='src'):

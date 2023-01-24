@@ -56,7 +56,8 @@ flags = {
 
     "cadastrando_aula":False,
         "mandando_titulo_aula":False,
-        "mandando_descricao_aula":False
+        "mandando_descricao_aula":False,
+        "mandando_links_aula":False
 }
 
 
