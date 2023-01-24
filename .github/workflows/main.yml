@@ -1,10 +1,10 @@
 # This workflow will install dependencies, create coverage tests and run Pytest Coverage Commentator
 # For more information see: https://github.com/coroo/pytest-coverage-commentator
-name: pytest-coverage-commentator
+name: pytest-coverage-codecov
 on:
-  pull_request:
-    branches: 
-      - '*'
+  push:
+      branches: 
+        - 'main'
 
 jobs:
   build:
@@ -24,8 +24,9 @@ jobs:
     - name: Build coverage file
       run: |
         python create_tests_coverage.py > pytest-coverage.txt
-    - name: Pytest coverage comment
-      uses: MishaKav/pytest-coverage-comment@main
+    - name: Upload to codecov
+      uses: codecov/codecov-action@v3
       with:
-        pytest-coverage-path: ./pytest-coverage.txt
-        junitxml-path: ./pytest.xml
+        files: ./pytest.xml
+        fail_ci_if_error: true # optional (default = false)
+        verbose: true # optional (default = false)
