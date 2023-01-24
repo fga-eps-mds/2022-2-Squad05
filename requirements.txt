@@ -2,3 +2,4 @@ python-telegram-bot
 pandas
 firebase_admin
 pytest
+pytest-cov

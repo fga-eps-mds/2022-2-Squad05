@@ -10,7 +10,8 @@ yarn-error.log*
 firebase-debug.log*
 firebase-debug.*.log*
 
-__pycache__/
+.coverage
+*.pyc
 .pytest_cache
 
 # Firebase cache
