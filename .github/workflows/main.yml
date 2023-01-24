@@ -28,5 +28,5 @@ jobs:
     - name: Upload to codecov
       uses: codecov/codecov-action@v3
       with:
-        files: ./pytest.xml,./pytest-coverage.txt
+        files: ./coverage.xml
         verbose: true # optional (default = false)
