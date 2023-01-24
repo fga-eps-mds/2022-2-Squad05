@@ -1,3 +1,10 @@
+
+/__pycache__/
+.coverage
+*.pyc
+pytest-coverage.txt
+pytest.xml
+.pytest_cache
 downloads/*
 database.db
 serviceAccount.json
@@ -10,9 +17,6 @@ yarn-error.log*
 firebase-debug.log*
 firebase-debug.*.log*
 
-.coverage
-*.pyc
-.pytest_cache
 
 # Firebase cache
 .firebase/
