@@ -3,3 +3,4 @@ pandas
 firebase_admin
 pytest
 pytest-cov
+openpyxl
