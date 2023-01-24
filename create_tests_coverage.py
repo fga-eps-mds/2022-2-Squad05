@@ -6,4 +6,4 @@ os.chdir('tests/')
 
 sys.path.append(os.path.abspath('../src/'))
 
-pytest.main(["--junitxml=pytest.xml","--cov-report","term:skip-covered","--cov=../src/"])
+pytest.main(["--junitxml=../pytest.xml","--cov-report","term:skip-covered","--cov=../src/"])
