@@ -24,9 +24,9 @@ jobs:
     - name: Build coverage file
       run: |
         python create_tests_coverage.py > pytest-coverage.txt
+        ls ./
     - name: Upload to codecov
       uses: codecov/codecov-action@v3
       with:
-        files: ./pytest.xml ./pytest-coverage.txt
-        fail_ci_if_error: true # optional (default = false)
+        files: ./pytest.xml,./pytest-coverage.txt
         verbose: true # optional (default = false)
