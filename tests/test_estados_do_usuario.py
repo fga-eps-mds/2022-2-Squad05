@@ -10,6 +10,9 @@ import inspect
 from telegram.ext import ContextTypes
 from estados_do_usuario import EstadoDoUsuario,set_estado_do_usuario,make_sure_estado_is_init,lida_com_todos_os_estados_do_usuario,get_estados_dos_usuarios,clear_estados_dos_usuarios
 
+
+
+
 def test_estados_do_usuario_1():
 
     assert len(get_estados_dos_usuarios()) == 0
@@ -18,7 +21,20 @@ def test_estados_do_usuario_1():
 
     assert len(get_estados_dos_usuarios()) == 1
 
+    
+
+    
+def test_estados_do_usuario_clear():
+    get_estados_dos_usuarios().clear()
+    assert len(get_estados_dos_usuarios()) == 0
+
+    set_estado_do_usuario(22342,EstadoDoUsuario())
+
+    assert len(get_estados_dos_usuarios()) == 1
+
     clear_estados_dos_usuarios()
+
+    assert len(get_estados_dos_usuarios()) == 0
 
 
 
