@@ -11,5 +11,3 @@ pytest.main(["--cov-report","term:skip-covered","--cov-report","xml:../coverage.
 os.chdir('../')
 
 print(os.listdir('./'))
-
-''

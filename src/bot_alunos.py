@@ -14,10 +14,15 @@ from callback_sem_dados import CallbackSemDados
 from geral import *
 from hashlib import sha256
 from estados_do_usuario import make_sure_estado_is_init
+import argparse
 
 
 
-BOT_TOKEN = "5624757690:AAGmsRPmRfEhBnEqKhIfW9pcBjNXsMeDeVY"
+parser = argparse.ArgumentParser()
+parser.add_argument("--bot_token")
+
+args = parser.parse_args()
+BOT_TOKEN = "5624757690:AAGmsRPmRfEhBnEqKhIfW9pcBjNXsMeDeVY" if args.bot_token == None else args.bot_token
 
 
 from estados_do_usuario import lida_com_todos_os_estados_do_usuario,set_estado_do_usuario

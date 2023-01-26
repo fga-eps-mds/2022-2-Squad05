@@ -6,24 +6,26 @@ import subprocess
 from src.geral import call_database_and_execute
 
 
-cursos_process = multiprocessing.Process(
-    target=subprocess.run,
-    kwargs={
-        'args': f'python3 src/bot_cursos.py',
-        'shell': True
-
-    })
 
 
-alunos_process= multiprocessing.Process(
-    target=subprocess.run,
-    kwargs={
-        'args': f'python3 src/bot_alunos.py',
-        'shell': True
-    })
+def inicia_bot(bot_token_alunos = None,bot_token_cursos=None):
 
 
-if __name__ == "__main__":
+    cursos_process = multiprocessing.Process(
+        target=subprocess.run,
+        kwargs={
+            'args': f'python3 src/bot_cursos.py {f"--bot-token {bot_token_cursos}" if bot_token_cursos != None else ""}',
+            'shell': True
+
+        })
+
+
+    alunos_process= multiprocessing.Process(
+        target=subprocess.run,
+        kwargs={
+            'args': f'python3 src/bot_alunos.py {f"--bot-token {bot_token_alunos}" if bot_token_alunos != None else ""}',
+            'shell': True
+        })
 
     if not os.path.exists("database.db"):
         #criando o banco de dados caso não exista ainda
@@ -59,3 +61,9 @@ if __name__ == "__main__":
 
     cursos_process.start()
     alunos_process.start()
+
+    return cursos_process,alunos_process
+    
+if __name__ == "__main__":
+
+    inicia_bot()

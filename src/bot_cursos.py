@@ -26,6 +26,14 @@ from nao_deseja_criar_curso import NaoDesejaCriarCurso
 from receber_id_curso import ReceberIdCurso
 from remover_aula import RemoverAula
 
+import argparse
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--bot_token")
+
+args = parser.parse_args()
+BOT_TOKEN = '5507439323:AAGiiQ0_vnqIilIRBPRBtGnS54eje4D5xVE' if args.bot_token == None else args.bot_token
 
 # definindo como o log vai ser salvo
 logging.basicConfig(
@@ -538,7 +546,7 @@ async def cadastrar_aulas_individualmente(id_curso, update: Update, context: Con
 if __name__ == '__main__':
     import_all_callbacks(globals())
 
-    application = ApplicationBuilder().token('5507439323:AAGiiQ0_vnqIilIRBPRBtGnS54eje4D5xVE').build()
+    application = ApplicationBuilder().token(BOT_TOKEN).build()
     
     start_handler = CommandHandler('start', start)
 
