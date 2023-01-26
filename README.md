@@ -11,6 +11,10 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/fga-eps-mds/2022-2-Bote?style=for-the-badge)
 ![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/fga-eps-mds/2022-2-Bote?style=for-the-badge)
 
+# Code Coverage
+
+[![codecov](https://codecov.io/github/fga-eps-mds/2022-2-Bote/branch/main/graph/badge.svg?token=Q3JLLAIH9Q)](https://codecov.io/github/fga-eps-mds/2022-2-Bote)
+
 
 # 🛶 Descrição do Projeto
 Projeto em desenvolvimento para a disciplina de Métodos de Desenvolvimento de Software, ministrada na Universidade de Brasília (UnB) - Faculdade do Gama (FGA), no segundo semestre letivo de 2022. 
