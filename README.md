@@ -10,6 +10,7 @@
 ![GitHub issues](https://img.shields.io/github/issues-raw/fga-eps-mds/2022-2-Bote?style=for-the-badge)
 ![GitHub last commit](https://img.shields.io/github/last-commit/fga-eps-mds/2022-2-Bote?style=for-the-badge)
 ![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/fga-eps-mds/2022-2-Bote?style=for-the-badge)
+[![GitHub Status Badge](https://dev.azure.com/Squad05-Bote/Bote/_apis/build/status/fga-eps-mds.2022-2-Bote%20(2)?branchName=main)](https://dev.azure.com/Squad05-Bote/Bote/_build/latest?definitionId=3&branchName=main)
 
 # Code Coverage
 
