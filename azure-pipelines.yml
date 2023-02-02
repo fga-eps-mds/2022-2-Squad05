@@ -26,6 +26,11 @@ steps:
   displayName: 'Install dependencies'
 
 - script: |
+    python create_tests_coverage.py > pytest-coverage.txt
+    ls ./
+  displayName: 'Upload to codecov'
+
+- script: |
     pip install pytest pytest-azurepipelines pytest-cov
     pytest -v — junitxml=junit/test-results.xml — cov — cov-report=xml — cov-report=html
   displayName: “Pytest Unit Test with Coverage”
