@@ -36,7 +36,7 @@ steps:
   displayName: 'Install coverage'
 
 - script: |
-    coverage run run_tests.py
+    coverage run create_tests_coverage.py
   displayName: 'Run tests'
 
 - script: |
