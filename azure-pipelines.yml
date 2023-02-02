@@ -39,5 +39,4 @@ steps:
   displayName: ‘Publish Cobertura Coverage Report’
   inputs:
     codeCoverageTool: Cobertura
-    summaryFileLocation: ‘$(System.DefaultWorkingDirectory)/**/coverage.xml’
-    reportDirectory: ‘$(System.DefaultWorkingDirectory)/**/htmlcov’
+    summaryFileLocation: ‘./coverage.xml’
