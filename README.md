@@ -5,12 +5,12 @@
 </div>
 <h1 align="center"> Bote </h1>
           
-![GitHub top language](https://img.shields.io/github/languages/top/fga-eps-mds/2022-2-Bote?style=for-the-badge)
-![GitHub contributors](https://img.shields.io/github/contributors/fga-eps-mds/2022-2-Bote?style=for-the-badge)
-![GitHub issues](https://img.shields.io/github/issues-raw/fga-eps-mds/2022-2-Bote?style=for-the-badge)
-![GitHub last commit](https://img.shields.io/github/last-commit/fga-eps-mds/2022-2-Bote?style=for-the-badge)
-![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/fga-eps-mds/2022-2-Bote?style=for-the-badge)
-[![GitHub Status Badge](https://dev.azure.com/Squad05-Bote/Bote/_apis/build/status/fga-eps-mds.2022-2-Bote%20(2)?branchName=main)](https://dev.azure.com/Squad05-Bote/Bote/_build/latest?definitionId=3&branchName=main)
+![GitHub top language](https://img.shields.io/github/languages/top/fga-eps-mds/2022-2-Bote?style=flat)
+![GitHub contributors](https://img.shields.io/github/contributors/fga-eps-mds/2022-2-Bote?style=flat)
+![GitHub issues](https://img.shields.io/github/issues-raw/fga-eps-mds/2022-2-Bote?style=flat)
+![GitHub last commit](https://img.shields.io/github/last-commit/fga-eps-mds/2022-2-Bote?style=flat)
+![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/fga-eps-mds/2022-2-Bote?style=flat)
+[![GitHub Status Badge](https://dev.azure.com/Squad05-Bote/Bote/_apis/build/status/fga-eps-mds.2022-2-Bote%20(2)?branchName=main)](https://dev.azure.com/Squad05-Bote/Bote/_build/latest?definitionId=3&branchName=main&style=for-the-badge)
 
 # Code Coverage
 
