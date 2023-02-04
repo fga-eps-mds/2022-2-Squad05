@@ -86,23 +86,22 @@ def reset_flags(user_id):
 
 
 async def send_message_on_new_block(update: Update,context: ContextTypes.DEFAULT_TYPE,text:str,buttons = [],parse_mode = ''):
-    buttons = buttons_to_inline_keyboard(buttons)
+    for column in range(len(buttons)):
+        for row in range(len(buttons[column])):
+            if buttons[column][row].__class__.__name__ == "NossoInlineKeyboardButton":
+                buttons[column][row] = buttons[column][row].get_button()
     
     reset_last_message(update.effective_chat.id)
     await context.bot.send_message(chat_id=update.effective_chat.id,text=text,reply_markup=telegram.InlineKeyboardMarkup(inline_keyboard=buttons),parse_mode=parse_mode)
     
 
-def buttons_to_inline_keyboard(buttons):
+async def send_message_or_edit_last(update: Update,context: ContextTypes.DEFAULT_TYPE,text:str,buttons = [],parse_mode = ''):
+    """função auxiliar para enviar uma mensagem mais facilmente ou editar a última se possível"""
+
     for column in range(len(buttons)):
         for row in range(len(buttons[column])):
             if buttons[column][row].__class__.__name__ == "NossoInlineKeyboardButton":
                 buttons[column][row] = buttons[column][row].get_button()
-    return buttons
-
-async def send_message_or_edit_last(update: Update,context: ContextTypes.DEFAULT_TYPE,text:str,buttons = [],parse_mode = ''):
-    """função auxiliar para enviar uma mensagem mais facilmente ou editar a última se possível"""
-
-    buttons = buttons_to_inline_keyboard(buttons)
                 
 
     if update.effective_chat.id in last_messages:
