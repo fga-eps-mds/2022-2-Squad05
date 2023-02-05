@@ -35,7 +35,13 @@ def call_database_and_execute(statement,parameters = []) -> List[sql.Row]:
     db.close()
     return final_data
 
+def buttons_to_inline_keyboard(buttons: list):
+    for row in range(len(buttons)):
+        for column in range(len(buttons[row])):
+            if buttons[row][column].__class__.__name__ == "NossoInlineKeyboardButton":
+                buttons[row][column] = buttons[row][column].get_button()
 
+    return buttons
 
 # dicionario para guardar o id da ultima mensagem mandada p/ cada usuário
 # serve para evitar mandarmos muitas mensagens
@@ -86,10 +92,7 @@ def reset_flags(user_id):
 
 
 async def send_message_on_new_block(update: Update,context: ContextTypes.DEFAULT_TYPE,text:str,buttons = [],parse_mode = ''):
-    for column in range(len(buttons)):
-        for row in range(len(buttons[column])):
-            if buttons[column][row].__class__.__name__ == "NossoInlineKeyboardButton":
-                buttons[column][row] = buttons[column][row].get_button()
+    buttons = buttons_to_inline_keyboard(buttons)
     
     reset_last_message(update.effective_chat.id)
     await context.bot.send_message(chat_id=update.effective_chat.id,text=text,reply_markup=telegram.InlineKeyboardMarkup(inline_keyboard=buttons),parse_mode=parse_mode)
@@ -98,12 +101,8 @@ async def send_message_on_new_block(update: Update,context: ContextTypes.DEFAULT
 async def send_message_or_edit_last(update: Update,context: ContextTypes.DEFAULT_TYPE,text:str,buttons = [],parse_mode = ''):
     """função auxiliar para enviar uma mensagem mais facilmente ou editar a última se possível"""
 
-    for column in range(len(buttons)):
-        for row in range(len(buttons[column])):
-            if buttons[column][row].__class__.__name__ == "NossoInlineKeyboardButton":
-                buttons[column][row] = buttons[column][row].get_button()
-                
-
+    buttons = buttons_to_inline_keyboard(buttons)
+    
     if update.effective_chat.id in last_messages:
         await context.bot.edit_message_text(chat_id=update.effective_chat.id,message_id=last_messages[update.effective_chat.id],text=text,reply_markup=telegram.InlineKeyboardMarkup(inline_keyboard=buttons))
     else:

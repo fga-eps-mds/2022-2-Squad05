@@ -10,7 +10,7 @@ import inspect
 from telegram.ext import ContextTypes
 from estados_do_usuario import EstadoDoUsuario,set_estado_do_usuario,make_sure_estado_is_init,lida_com_todos_os_estados_do_usuario,get_estados_dos_usuarios,clear_estados_dos_usuarios
 
-
+import pytest
 
 
 def test_estados_do_usuario_1():
@@ -48,7 +48,8 @@ class EstadoQualquer(EstadoDoUsuario):
 
         return super().lida_com_mensagem(update, context)
 
-def test_estados_do_usuario_2():
+@pytest.mark.asyncio
+async def test_estados_do_usuario_2():
 
     assert len(get_estados_dos_usuarios()) == 0
     assert EstadoQualquer.k == 0
@@ -58,7 +59,7 @@ def test_estados_do_usuario_2():
     assert len(get_estados_dos_usuarios()) == 1
     assert EstadoQualquer.k == 0
 
-    get_estados_dos_usuarios()["22323"].lida_com_mensagem(Update(2),ContextTypes.DEFAULT_TYPE)
+    await get_estados_dos_usuarios()["22323"].lida_com_mensagem(Update(2),ContextTypes.DEFAULT_TYPE)
 
 
     assert EstadoQualquer.k == 1

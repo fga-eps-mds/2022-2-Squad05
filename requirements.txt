@@ -3,4 +3,5 @@ pandas
 firebase_admin
 pytest
 pytest-cov
+pytest-asyncio
 openpyxl
