@@ -239,12 +239,20 @@ class ExportarProgressoDosAlunos(CallbackComDados):
             writer.writerow(["Nome Aluno\\Titulo Aula"] + [i['titulo'] for i in aulas_por_curso])
             for i in dados_alunos:
                 aulas_finalizadas = list(map(lambda x: x["id_aula"],call_database_and_execute("SELECT id_aula FROM aulas_por_aluno WHERE id_aluno = ?",[i['id_aluno']])))
+                try:
+                    chat = await telegram.Bot(TokenHolder.alunos_token).get_chat(i["id_aluno"])
 
-                writer.writerow([(await context.bot.get_chat(i['id_aluno'])).full_name] + [1 if data['id_aula'] in aulas_finalizadas else 0 for i,data in enumerate(aulas_por_curso)])
+                    writer.writerow([(chat).full_name] + [1 if data['id_aula'] in aulas_finalizadas else 0 for i,data in enumerate(aulas_por_curso)])
+                except Exception as e: 
+                    print(f'Error found when getting chat {i["id_aluno"]}: {e}')
+                    continue
+                    
             
         dados_curso = call_database_and_execute("SELECT * FROM cursos WHERE id = ?",[id_curso])
         await context.bot.send_document(update.effective_chat.id,open(file_name,'rb'),filename=f'{dados_curso[0]["nome"]}.csv')
 
+
+        print(file_name)
         os.remove(file_name)
 
         await send_message_on_new_block(f'Aqui estão os dados sobre o curso {dados_curso[0]["nome"]}')

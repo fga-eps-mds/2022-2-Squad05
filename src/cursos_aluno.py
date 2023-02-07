@@ -16,16 +16,16 @@ class EntrandoEmCurso(EstadoDoUsuario):
 class MandandoSenhaCurso(EntrandoEmCurso):
     async def lida_com_mensagem(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         
-        dados_curso = call_database_and_execute("SELECT hash_senha FROM cursos WHERE id = ?",[context.user_data["codigo"]])
+        dados_curso = call_database_and_execute("SELECT hash_senha FROM cursos WHERE id = ?",[context.user_data["id_curso"]])[0]
 
         if dados_curso["hash_senha"] == hash_string(update.effective_message.text):
-            call_database_and_execute("INSERT INTO alunos_por_curso (id_aluno,id_curso) VALUES (?,?)",[update.effective_chat.id,context.user_data["codigo"]])
-            await VerCursoEspecificoAluno.lida_callback(update,context,context.user_data["codigo"])
+            call_database_and_execute("INSERT INTO alunos_por_curso (id_aluno,id_curso) VALUES (?,?)",[update.effective_chat.id,context.user_data["id_curso"]])
+            await VerCursoEspecificoAluno.lida_callback(update,context,context.user_data["id_curso"])
         else:
             set_estado_do_usuario(update.effective_chat.id,MandandoSenhaCurso())
             return await send_message_on_new_block(text="A senha está incorreta, por favor tente novamente...",buttons=[
                 [
-                    NossoInlineKeyboardButton(text="voltar ao menu",callback_data=MenuPrincipalAlunos(""))
+                    NossoInlineKeyboardButton(text="voltar ao menu",callback=MenuPrincipalAlunos(""))
                 ]
             ])
             
@@ -44,7 +44,10 @@ class MandandoCodigoCurso(EntrandoEmCurso):
             set_estado_do_usuario(update.effective_chat.id,MandandoCodigoCurso())
             return
         if curso_existe[0]["hash_senha"] != "":
-            await send_message_on_new_block(text="Parece que esse curso precisa de uma senha para entrar, por favor digite a senha para entrar no curso...")
+            await send_message_on_new_block(text="Parece que esse curso precisa de uma senha para entrar, por favor digite a senha para entrar no curso...",buttons=[ [
+                    NossoInlineKeyboardButton(text="voltar ao menu",callback=MenuPrincipalAlunos(""))
+                ]])
+            context.user_data['id_curso'] = update.effective_message.text
             set_estado_do_usuario(update.effective_chat.id,MandandoSenhaCurso())
             return
         call_database_and_execute("INSERT INTO alunos_por_curso (id_aluno,id_curso) VALUES (?,?)",[update.effective_chat.id,update.effective_message.text])
@@ -55,7 +58,11 @@ class MandandoCodigoCurso(EntrandoEmCurso):
 class NaoPossuiCodigo(CallbackSemDados):
     async def lida_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-        return await send_message_or_edit_last(text="Esse código é o id do curso em que você deseja entrar.\n\nPara obte-lo, solicite-o ao dono do curso.")
+        return await send_message_or_edit_last(text="Esse código é o id do curso em que você deseja entrar.\n\nPara obte-lo, solicite-o ao dono do curso.",buttons=[
+            [
+                NossoInlineKeyboardButton(text="voltar",callback=MenuPrincipalAlunos())
+            ]
+        ])
 
 
 class NaoDesejaEntrarEmCurso(CallbackSemDados):

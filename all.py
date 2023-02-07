@@ -3,18 +3,21 @@ import os
 import subprocess
 
 
-from src.geral import call_database_and_execute
+from src.geral import call_database_and_execute,TokenHolder
 
 
 
 
 def inicia_bot(bot_token_alunos = None,bot_token_cursos=None):
-
+    if bot_token_cursos != None:
+        TokenHolder.set_cursos_token(bot_token_cursos)    
+    if bot_token_cursos != None:
+        TokenHolder.set_alunos_token(bot_token_alunos)
 
     cursos_process = multiprocessing.Process(
         target=subprocess.run,
         kwargs={
-            'args': f'python src/bot_cursos.py {f"--bot-token {bot_token_cursos}" if bot_token_cursos != None else ""}',
+            'args': f'python src/bot_cursos.py',
             'shell': True
 
         })
@@ -23,7 +26,7 @@ def inicia_bot(bot_token_alunos = None,bot_token_cursos=None):
     alunos_process= multiprocessing.Process(
         target=subprocess.run,
         kwargs={
-            'args': f'python src/bot_alunos.py {f"--bot-token {bot_token_alunos}" if bot_token_alunos != None else ""}',
+            'args': f'python src/bot_alunos.py',
             'shell': True
         })
 
@@ -71,5 +74,7 @@ def inicia_bot(bot_token_alunos = None,bot_token_cursos=None):
     return cursos_process,alunos_process
     
 if __name__ == "__main__":
+
+    
 
     inicia_bot()

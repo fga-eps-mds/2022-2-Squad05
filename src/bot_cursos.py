@@ -75,7 +75,7 @@ def inicializa_bot_cursos(application):
 if __name__ == '__main__':
     import_all_callbacks(globals())
 
-    application = ApplicationBuilder().token('5507439323:AAGiiQ0_vnqIilIRBPRBtGnS54eje4D5xVE').build()
+    application = ApplicationBuilder().token(TokenHolder.cursos_token).build()
     
     start_handler = CommandHandler('start',add_set_update_and_context_to_function_call(start))
 

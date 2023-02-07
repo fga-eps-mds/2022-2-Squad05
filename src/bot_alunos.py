@@ -15,10 +15,6 @@ from geral import *
 from hashlib import sha256
 from estados_do_usuario import make_sure_estado_is_init
 
-
-
-BOT_TOKEN = "5624757690:AAGmsRPmRfEhBnEqKhIfW9pcBjNXsMeDeVY"
-
 from menu_principal_alunos import *
 from estados_do_usuario import lida_com_todos_os_estados_do_usuario,set_estado_do_usuario
 from callback import Callback,import_all_callbacks
@@ -72,6 +68,6 @@ def inicializa_bot_alunos(application):
 
 if __name__ == '__main__':
     import_all_callbacks(globals())
-    application = ApplicationBuilder().token(BOT_TOKEN).build()
+    application = ApplicationBuilder().token(TokenHolder.alunos_token).build()
     
     inicializa_bot_alunos(application)

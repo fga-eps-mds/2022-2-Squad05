@@ -112,6 +112,18 @@ class MessagesManager:
         MessagesManager.current_context = context
         MessagesManager.current_update = update
 
+class TokenHolder:
+    alunos_token = "5624757690:AAGmsRPmRfEhBnEqKhIfW9pcBjNXsMeDeVY"
+    cursos_token = '5507439323:AAGiiQ0_vnqIilIRBPRBtGnS54eje4D5xVE'
+
+
+    @staticmethod
+    def set_alunos_token(token):
+        TokenHolder.alunos_token = token
+
+    @staticmethod
+    def set_cursos_token(token):
+        TokenHolder.cursos_token = token
 
 
 def add_set_update_and_context_to_function_call(function):
