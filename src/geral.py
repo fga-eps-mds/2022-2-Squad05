@@ -117,6 +117,7 @@ class MessagesManager:
 def add_set_update_and_context_to_function_call(function):
     def wrapper(*args, **kwargs):
         MessagesManager.set_update_and_context(*args[:2])
+        
         retval = function(*args, **kwargs)
         return retval
     return wrapper

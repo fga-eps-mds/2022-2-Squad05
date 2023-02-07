@@ -37,9 +37,11 @@ def make_sure_estado_is_init(update: Update):
 def get_estados_dos_usuarios():
     return EstadoDoUsuario.get_estados_dos_usuarios()
 def get_estado_do_usuario(usuario_id):
-    if usuario_id in EstadoDoUsuario.get_estados_dos_usuarios():
-        return EstadoDoUsuario.get_estados_dos_usuarios()[usuario_id]
-    raise IndexError()
+    if usuario_id not in EstadoDoUsuario.get_estados_dos_usuarios():
+            EstadoDoUsuario.get_estados_dos_usuarios()[usuario_id] = EstadoDoUsuario()
+
+    return EstadoDoUsuario.get_estados_dos_usuarios()[usuario_id]
+   
 
 def clear_estados_dos_usuarios():
     EstadoDoUsuario.get_estados_dos_usuarios().clear()

@@ -14,7 +14,7 @@ def inicia_bot(bot_token_alunos = None,bot_token_cursos=None):
     cursos_process = multiprocessing.Process(
         target=subprocess.run,
         kwargs={
-            'args': f'python3 src/bot_cursos.py {f"--bot-token {bot_token_cursos}" if bot_token_cursos != None else ""}',
+            'args': f'python src/bot_cursos.py {f"--bot-token {bot_token_cursos}" if bot_token_cursos != None else ""}',
             'shell': True
 
         })
@@ -23,7 +23,7 @@ def inicia_bot(bot_token_alunos = None,bot_token_cursos=None):
     alunos_process= multiprocessing.Process(
         target=subprocess.run,
         kwargs={
-            'args': f'python3 src/bot_alunos.py {f"--bot-token {bot_token_alunos}" if bot_token_alunos != None else ""}',
+            'args': f'python src/bot_alunos.py {f"--bot-token {bot_token_alunos}" if bot_token_alunos != None else ""}',
             'shell': True
         })
 

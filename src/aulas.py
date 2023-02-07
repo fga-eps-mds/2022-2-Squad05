@@ -98,6 +98,8 @@ class CadastrarAulaExcel(CallbackComDados):
 
         context.user_data['id_curso'] = id_curso
 
+        set_estado_do_usuario(update.effective_chat.id,CadastrandoAulaExcel())
+
         return await send_message_or_edit_last(text="""Ok! Para enviar as suas aulas no arquivo excel, por favor crie as colunas
 
         TITULO | DESCRICAO | LINK
@@ -144,9 +146,11 @@ class CadastrarAulaExcel(CallbackComDados):
 
         
 class CadastrarAulas(CallbackComDados):
-    async def lida_callback(update: Update, context: ContextTypes.DEFAULT_TYPE,id_curso,primeira_vez):
+    async def lida_callback(update: Update, context: ContextTypes.DEFAULT_TYPE,id_curso):
 
-        if primeira_vez:
+        aulas_cadastradas = call_database_and_execute("SELECT * FROM aulas_por_curso WHERE id_curso = ?",[id_curso])
+
+        if len(aulas_cadastradas) == 0:
             message = """Vejo que você não cadastrou nenhuma aula nesse curso ainda, gostaria de cadastrar novas aulas?"""
         else:
             message = """Como você gostaria de adicionar a(s) aula(s)?"""
@@ -172,7 +176,7 @@ class VerAulas(CallbackComDados):
             buttons = [[NossoInlineKeyboardButton(f'{data["titulo"]}',callback=VerAulaEspecifica(data["id_aula"]))] for i,data in enumerate(dados)]
 
             #TODO
-            buttons.append([NossoInlineKeyboardButton('adicionar aula',callback=f"CadastrarAulas {id_curso},{0}")])
+            buttons.append([NossoInlineKeyboardButton('adicionar aula',callback=f"CadastrarAulas {id_curso}")])
 
             buttons.append([NossoInlineKeyboardButton("voltar",callback=f"VerCursoEspecifico {id_curso}")])
 
