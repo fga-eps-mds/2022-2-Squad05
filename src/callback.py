@@ -15,9 +15,9 @@ import pandas as pd
 import time
 from estados_do_usuario import EstadoDoUsuario
 import importlib.util as util
+from geral import *
 
 class Callback:
-
 
     def get_callback_str(self):
         return ''
