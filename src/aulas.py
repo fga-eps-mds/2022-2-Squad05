@@ -129,7 +129,7 @@ class CadastrarAulaExcel(CallbackComDados):
                         context.user_data['id_curso'],
                         row["TITULO"],
                         row["DESCRICAO"],
-                        "\n".join(list(filter(lambda x: x != "",[str(row[i]) if i.startswith("LINK") else "" for i in row.keys()])))
+                        "\n\n".join(list(filter(lambda x: x != "",["* " + str(row[i]) if i.startswith("LINK") else "" for i in row.keys()])))
                     ])
 
                 os.remove(path)
