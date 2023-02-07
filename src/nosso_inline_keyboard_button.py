@@ -17,7 +17,10 @@ from callback import Callback
 
 class NossoInlineKeyboardButton:
     def __init__(self,text:str,callback: Callback) -> None:
-        self._button = InlineKeyboardButton(text=text,callback_data=callback.get_callback_str())
+        if type(callback) == type(""):
+            self._button = InlineKeyboardButton(text=text,callback_data=callback)
+        else:
+            self._button = InlineKeyboardButton(text=text,callback_data=callback.get_callback_str())
 
     def get_button(self):
         return self._button
