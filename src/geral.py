@@ -70,41 +70,76 @@ flags = {
 temp_dados_curso = {}
 
 
-def reset_temp_curso(user_id):
-    temp_dados_curso[user_id] = {"nome":"","descricao":"","senha":"","id":""}
+def reset_temp_curso(id_user):
+    temp_dados_curso[id_user] = {"nome":"","descricao":"","senha":"","id":""}
 
-def make_sure_flags_are_init(user_id):
+def make_sure_flags_are_init(id_user):
     """função auxiliar para garantir que não vamos acessar um usuário não existente"""
-    if user_id not in flags_per_user:
-        flags_per_user[user_id] = deepcopy(flags)
+    if id_user not in flags_per_user:
+        flags_per_user[id_user] = deepcopy(flags)
 
 
 
 
 # função auxiliar para evitar mudar uma mensagem muito atrás
-def reset_last_message(user_id):
-    if user_id in last_messages:
-        del last_messages[user_id]
+def reset_last_message(id_user):
+    if id_user in last_messages:
+        del last_messages[id_user]
 
-def reset_flags(user_id):
+def reset_flags(id_user):
     """função auxiliar para resetar as flags"""
-    flags_per_user[user_id] = deepcopy(flags)
+    flags_per_user[id_user] = deepcopy(flags)
 
 
-async def send_message_on_new_block(update: Update,context: ContextTypes.DEFAULT_TYPE,text:str,buttons = [],parse_mode = ''):
+
+class MessagesManager:
+    current_update = None
+    current_context = None
+
+    logging_calls_to_messages = False
+    logger_data = []
+
+    @staticmethod
+    def enable_testing():
+        MessagesManager.logging_calls_to_messages = True
+
+    @staticmethod
+    def disable_testing():
+        MessagesManager.logging_calls_to_messages = False
+
+    @staticmethod
+    def set_update_and_context(update: Update,context: ContextTypes.DEFAULT_TYPE):
+        MessagesManager.current_context = context
+        MessagesManager.current_update = update
+
+
+
+def add_set_update_and_context_to_function_call(function):
+    def wrapper(*args, **kwargs):
+        MessagesManager.set_update_and_context(*args[:2])
+        retval = function(*args, **kwargs)
+        return retval
+    return wrapper
+
+async def send_message_on_new_block(text:str,buttons = [],parse_mode = ''):
     buttons = buttons_to_inline_keyboard(buttons)
+
     
-    reset_last_message(update.effective_chat.id)
-    await context.bot.send_message(chat_id=update.effective_chat.id,text=text,reply_markup=telegram.InlineKeyboardMarkup(inline_keyboard=buttons),parse_mode=parse_mode)
+    reset_last_message(MessagesManager.current_update.effective_chat.id)
+    return await MessagesManager.current_context.bot.send_message(chat_id=MessagesManager.current_update.effective_chat.id,text=text,reply_markup=telegram.InlineKeyboardMarkup(inline_keyboard=buttons),parse_mode=parse_mode)
     
 
-async def send_message_or_edit_last(update: Update,context: ContextTypes.DEFAULT_TYPE,text:str,buttons = [],parse_mode = ''):
+async def send_message_or_edit_last(text:str,buttons = [],parse_mode = ''):
     """função auxiliar para enviar uma mensagem mais facilmente ou editar a última se possível"""
 
     buttons = buttons_to_inline_keyboard(buttons)
-    
-    if update.effective_chat.id in last_messages:
-        await context.bot.edit_message_text(chat_id=update.effective_chat.id,message_id=last_messages[update.effective_chat.id],text=text,reply_markup=telegram.InlineKeyboardMarkup(inline_keyboard=buttons))
+
+
+
+    if MessagesManager.current_update.effective_chat.id in last_messages:
+        return await MessagesManager.current_context.bot.edit_message_text(chat_id=MessagesManager.current_update.effective_chat.id,message_id=last_messages[MessagesManager.current_update.effective_chat.id],text=text,reply_markup=telegram.InlineKeyboardMarkup(inline_keyboard=buttons))
     else:
-        message = await context.bot.send_message(chat_id=update.effective_chat.id,text=text,reply_markup=telegram.InlineKeyboardMarkup(inline_keyboard=buttons),parse_mode=parse_mode)
-        last_messages[update.effective_chat.id] = message.id
+        message = await MessagesManager.current_context.bot.send_message(chat_id=MessagesManager.current_update.effective_chat.id,text=text,reply_markup=telegram.InlineKeyboardMarkup(inline_keyboard=buttons),parse_mode=parse_mode)
+        last_messages[MessagesManager.current_update.effective_chat.id] = message.id
+        return message
+
