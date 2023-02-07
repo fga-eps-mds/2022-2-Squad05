@@ -47,7 +47,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(data) == 0:
         message += "Gostaria de criar um curso?"
         call_database_and_execute("INSERT INTO users (id_user) VALUES (?)",[update.effective_chat.id])
-        await send_message_or_edit_last(text=message,buttons=[
+        await send_message_on_new_block(text=message,buttons=[
         [
             NossoInlineKeyboardButton(text="Sim",callback=CriarCurso()),
         ],

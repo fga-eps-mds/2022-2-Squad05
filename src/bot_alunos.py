@@ -45,7 +45,7 @@ async def start(update: Update,context: ContextTypes.DEFAULT_TYPE):
 
     if len(dados) == 0:
 
-        await send_message_or_edit_last(text="Olá! Sou o Botezinho, um bot para te levar pelo rio do conhecimento!\n\nGostaria de entrar em um curso?",buttons=[
+        await send_message_on_new_block(text="Olá! Sou o Botezinho, um bot para te levar pelo rio do conhecimento!\n\nGostaria de entrar em um curso?",buttons=[
             [
                 NossoInlineKeyboardButton(text="sim",callback=PegarCodigoCurso())
             ],
