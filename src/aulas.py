@@ -113,12 +113,12 @@ class CadastrarAulaExcel(CallbackComDados):
     @staticmethod
     async def handle_excel_file(update: Update,context: ContextTypes.DEFAULT_TYPE):
         if type(get_estado_do_usuario(update.effective_chat.id)) == type(CadastrandoAulaExcel()):
-            await (await context.bot.get_file(update.message.document)).download(f"downloads/{update.message.document.file_unique_id}.xlsx")
-
+            file =(await context.bot.get_file(update.message.document))
+            
+            path = await file.download_to_drive()
 
             try:
-                rows, conseguiu = lida_com_arquivo_excel(f"downloads/{update.message.document.file_unique_id}.xlsx")
-
+                rows, conseguiu = lida_com_arquivo_excel(path)
                 if not conseguiu:
                     return await send_message_on_new_block(text=f"O seu arquivo não está no formato correto. Por favor, cheque os nomes das colunas e tente novamente")
                     
@@ -126,18 +126,17 @@ class CadastrarAulaExcel(CallbackComDados):
                 for row in rows:
                     call_database_and_execute("INSERT INTO aulas_por_curso (id_aula,id_curso,titulo,descricao,links) VALUES (?,?,?,?,?)",[
                         hash_string(f'{update.effective_chat.id}_{time.time()}'),
-                        temp_dados_curso[update.effective_chat.id]['id'],
+                        context.user_data['id_curso'],
                         row["TITULO"],
                         row["DESCRICAO"],
-                        "\n".join(list(filter(lambda x: x != "",[row[i] if i.startswith("LINK") else "" for i in row.keys()])))
+                        "\n".join(list(filter(lambda x: x != "",[str(row[i]) if i.startswith("LINK") else "" for i in row.keys()])))
                     ])
 
-
+                os.remove(path)
                 return await VerAulas.lida_callback(update,context,context.user_data['id_curso'])
             except Exception as e:
-                os.remove(f"downloads/{update.message.document.file_unique_id}.csv")
+                os.remove(path)
                 return await send_message_on_new_block(text=f"Um erro ocorreu enquanto eu lia esse arquivo. Por favor envie esse log para os donos do bot!\n\nError: {e}")
-
         return None
 
     @staticmethod
