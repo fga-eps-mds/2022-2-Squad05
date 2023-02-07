@@ -31,32 +31,38 @@ def inicia_bot(bot_token_alunos = None,bot_token_cursos=None):
         #criando o banco de dados caso não exista ainda
         call_database_and_execute("""
         CREATE TABLE IF NOT EXISTS users (
-            user_id INTEGER PRIMARY KEY
+            id_user INTEGER PRIMARY KEY
         )""")
 
         call_database_and_execute("""
         CREATE TABLE IF NOT EXISTS cursos (
             nome TEXT,
             descricao TEXT,
-            dono_id INTEGER,
+            id_dono INTEGER,
             hash_senha TEXT,
             id TEXT
         )""")
 
         call_database_and_execute("""
         CREATE TABLE IF NOT EXISTS aulas_por_curso (
-            aula_id TEXT,
-            curso_id TEXT,
+            id_aula TEXT,
+            id_curso TEXT,
             titulo TEXT,
             descricao TEXT,
             links TEXT
         )""")
 
         call_database_and_execute("""
+        CREATE TABLE IF NOT EXISTS aulas_por_aluno (
+            id_aula TEXT,
+            id_aluno INTEGER,
+            id_curso TEXT
+        )""")
+
+        call_database_and_execute("""
         CREATE TABLE IF NOT EXISTS alunos_por_curso (
-            aluno_id INTEGER,
-            curso_id TEXT,
-            aulas_completas TEXT
+            id_aluno INTEGER,
+            id_curso TEXT
         )""")
 
     cursos_process.start()
