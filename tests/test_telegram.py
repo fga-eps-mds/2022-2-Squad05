@@ -1,5 +1,5 @@
 from geral import *
-from all import inicia_bot
+from app import inicia_bot
 from bot_cursos import start as bot_cursos_start
 import pytest
 import asyncio as a
