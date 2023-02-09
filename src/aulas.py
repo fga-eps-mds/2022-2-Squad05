@@ -170,7 +170,7 @@ class VerAulas(CallbackComDados):
        
         dados = call_database_and_execute("SELECT * FROM aulas_por_curso WHERE id_curso = ?",[id_curso])
         if len(dados) == 0:
-            return await CadastrarAulas.lida_callback(update,context,id_curso,1)
+            return await CadastrarAulas.lida_callback(update,context,id_curso)
         else:
             buttons = [[NossoInlineKeyboardButton(f'{data["titulo"]}',callback=VerAulaEspecifica(data["id_aula"]))] for i,data in enumerate(dados)]
 
