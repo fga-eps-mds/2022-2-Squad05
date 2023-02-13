@@ -47,9 +47,7 @@ Conheça mais sobre o projeto em nossa [GitPage](https://fga-eps-mds.github.io/2
                   
 # 📁 Acesso ao projeto
 
-<h4 align="center"> 
-    :construction:  em construção  :construction:
-</h4>
+Para acessar o projeto, é necessário procurar pelo @GerenciadorDeCursosBot para acessar o bot do professor responsável pelo envio dos conteúdos e @cursos_sender_bot para acessar o bot dos alunos que recebem o conteúdo no Telegram.
 
 # 🛠️ Abrir e rodar o projeto
 
