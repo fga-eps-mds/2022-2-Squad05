@@ -18,7 +18,7 @@
 Projeto em desenvolvimento para a disciplina de Métodos de Desenvolvimento de Software, ministrada na Universidade de Brasília (UnB) - Faculdade do Gama (FGA), no segundo semestre letivo de 2022. 
 O Bote é um bot para Telegram que visa facilitar o compartilhamento de materiais de um curso ao enviá-los de forma automática para os alunos matriculados.
           
-O Bote permitirá que professores façam upload de materiais e estabeleçam uma ordem para que sejam enviados automaticamente aos alunos. O critério para compartilhamento de um novo bloco de materiais é que o aluno tenha confirmado que já estudou o material anterior.
+O Bote permite que professores faça upload de materiais e estabeleçam uma ordem para que sejam enviados automaticamente aos alunos. O critério para compartilhamento de um novo bloco de materiais é que o aluno tenha confirmado que já estudou o material anterior.
 
 O projeto é composto de 2 bots, o bot de criação dos cursos ([bot_cursos.py](bot_cursos.py)), e o bot de interação com os alunos ([bot_alunos.py](bot_alunos.py)). Para rodar sua instância de cada um deles, basta colocar os Tokens do seus bots nas variáveis BOT_TOKEN no topo dos arquivos de cada bot.
 
@@ -98,12 +98,11 @@ python ./app.py
 
 # 📄 Licença
 
-Este projeto está sob a licença [MIT](https://opensource.org/licenses/MIT)
+- Este projeto está sob a licença [MIT](https://opensource.org/licenses/MIT)
 
 # 🎁 Expressões de gratidão
 
 - Conte a outras pessoas sobre este projeto! 📢 <br>
 A sua divulgação é valiosa para nós. ❤️
-<br>
-<br>
-- Convide alguém da equipe para um café! ☕ <br>Nós não mordemos! 😅 
+- Convide alguém da equipe para um café! ☕ <br>
+Nós não mordemos! 😅 
